@@ -4,8 +4,8 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 import Appraise from '../components/Information/Appraise.vue'
-import ResCall from '../components/Information/ResCall.vue'
-import Response from '../components/Information/Response.vue'
+import Firewarning from '../components/Information/Firewarning.vue'
+import Feedback from '../components/Information/Feedback.vue'
 import Map from '../components/Map/Map.vue'
 import Call from '../components/Call/Call.vue'
 import Resident from '../components/Resident/Resident.vue'
@@ -23,8 +23,8 @@ Vue.use(Login)
 Vue.use(Home)
 Vue.use(Welcome)
 Vue.use(Appraise)
-Vue.use(ResCall)
-Vue.use(Response)
+Vue.use(Firewarning)
+Vue.use(Feedback)
 Vue.use(Call)
 Vue.use(Resident)
 Vue.use(Apartment)
@@ -43,9 +43,9 @@ const routes = [
   {
     path: '/home', component: Home, redirect: '/welcome',
     children: [{ path: '/welcome', component: Welcome },
-    { path: '/rescall', component: ResCall },
+    { path: '/firewarning', component: Firewarning },
     { path: '/appraise', component: Appraise },
-    { path: '/response', component: Response },
+    { path: '/feedback', component: Feedback },
     { path: '/call', component: Call },
     { path: '/resident', component: Resident },
     { path: '/apartment', component: Apartment },

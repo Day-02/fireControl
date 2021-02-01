@@ -18,23 +18,38 @@
             ></el-button> </el-input></el-col
       ></el-row>
     </el-card>
+
     <!-- 表格区域 -->
     <el-table :data="infoList" style="width: 100%" border stripe>
-      <el-table-column type="index"> </el-table-column>
-      <el-table-column prop="number" label="火警编号" width="180">
+      ><el-table-column prop="firehouse_id" label="消防站ID" width="100">
       </el-table-column>
-      <el-table-column prop="name" label="消防站名称" width="180">
+      <el-table-column prop="firehouse_address" label="消防站地址" width="180">
       </el-table-column>
-      <el-table-column prop="carNumber" label="消防车编号" width="180">
+      <el-table-column
+        prop="firehouse_firecar_number"
+        label="消防站车辆数"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="count" label="消防员个数"> </el-table-column>
-      <el-table-column prop="apartment" label="火灾小区地点" width="180">
+      <el-table-column
+        prop="firehouse_fireman_number"
+        label="消防站消防员数"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="time" label="时间" width="180">
-        <template slot-scope="scope">{{
-          scope.row.time | dateFormat
-        }}</template> </el-table-column
-      ><el-table-column label="操作" width="180">
+      <el-table-column prop="firehouse_latitude" label="消防站纬度" width="120">
+      </el-table-column>
+      <el-table-column
+        prop="firehouse_longitude"
+        label="消防站经度"
+        width="120"
+      >
+      </el-table-column
+      ><el-table-column prop="firehouse_name" label="消防站名称" width="120">
+      </el-table-column
+      ><el-table-column prop="firehouse_num" label="消防站编号" width="120">
+      </el-table-column>
+      <el-table-column label="操作" width="120">
         <template slot-scope="">
           <el-button
             type="primary"
@@ -84,10 +99,13 @@ export default {
     this.getInfoList()
   },
   methods: {
+    //查询消防站信息
     async getInfoList() {
-      const { data: res } = await this.$axios.get('/menu/infoList/')
-      this.infoList = res
-      console.log(this.infoList)
+      const { data: res } = await this.$axios.post('/firehouse/allFirehouse')
+      if (res.status !== 0) {
+        return this.$message.error('获取消防站信息失败！')
+      }
+      this.infoList = res.data
     },
 
     // 监听修改火警信息对话框的关闭事件

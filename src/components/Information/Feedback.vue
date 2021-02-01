@@ -4,7 +4,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>信息管理</el-breadcrumb-item>
-      <el-breadcrumb-item>接警推送信息</el-breadcrumb-item>
+      <el-breadcrumb-item>报警反馈</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片区域 -->
@@ -18,23 +18,51 @@
             ></el-button> </el-input></el-col
       ></el-row>
     </el-card>
+
     <!-- 表格区域 -->
     <el-table :data="infoList" style="width: 100%" border stripe>
       <el-table-column type="index"> </el-table-column>
-      <el-table-column prop="number" label="火警编号" width="180">
+      <el-table-column
+        prop="feedback_firecar_num"
+        label="消防车编号"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="name" label="消防站名称" width="180">
+      <el-table-column
+        prop="feedback_firehouse_name"
+        label="消防站名称"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="carNumber" label="消防车编号" width="180">
+      <el-table-column
+        prop="feedback_fireman_latitude"
+        label="消防员当前纬度"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="count" label="消防员个数"> </el-table-column>
-      <el-table-column prop="apartment" label="火灾小区地点" width="180">
+      <el-table-column
+        prop="feedback_fireman_longitude"
+        label="消防员当前经度"
+        width="120"
+      >
       </el-table-column>
-      <el-table-column prop="time" label="时间" width="180">
-        <template slot-scope="scope">{{
-          scope.row.time | dateFormat
-        }}</template> </el-table-column
-      ><el-table-column label="操作" width="180">
+      <el-table-column
+        prop="feedback_fireman_name"
+        label="消防员姓名"
+        width="110"
+      >
+      </el-table-column
+      ><el-table-column
+        prop="feedback_firewarning_id"
+        label="火警编号ID"
+        width="100"
+      >
+      </el-table-column
+      ><el-table-column prop="feedback_id" label="火警反馈ID" width="100">
+      </el-table-column
+      ><el-table-column prop="feedback_time" label="接警时间" width="180">
+      </el-table-column>
+      <el-table-column label="操作" width="120">
         <template slot-scope="">
           <el-button
             type="primary"
@@ -84,9 +112,13 @@ export default {
     this.getInfoList()
   },
   methods: {
+    //获取报警反馈信息数据
     async getInfoList() {
-      const { data: res } = await this.$axios.get('/menu/infoList/')
-      this.infoList = res
+      const { data: res } = await this.$axios.post('/feedback/allFirewarning')
+      if (res.status !== 0) {
+        return this.$message.error('获取报警反馈列表失败！')
+      }
+      this.infoList = res.data
       console.log(this.infoList)
     },
 

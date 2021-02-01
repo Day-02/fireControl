@@ -16,7 +16,7 @@ Vue.config.productionTip = false
 import './mock/mock.js'
 
 //配置请求的根路径
-axios.defaults.baseURL = 'http://106.14.93.164:8090/'
+axios.defaults.baseURL = 'http://106.14.93.164:8090'
 Vue.prototype.$axios = axios
 Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$message = Message

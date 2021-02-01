@@ -56,9 +56,9 @@
               <span>信息管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/rescall">居民报警信息</el-menu-item>
+              <el-menu-item index="/firewarning">居民报警信息</el-menu-item>
               <el-menu-item index="/appraise">用户评价信息</el-menu-item>
-              <el-menu-item index="/response">接警推送信息</el-menu-item>
+              <el-menu-item index="/feedback">接警推送信息</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
           <el-menu-item index="/data">

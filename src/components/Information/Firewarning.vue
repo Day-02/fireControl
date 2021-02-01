@@ -4,7 +4,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>信息管理</el-breadcrumb-item>
-      <el-breadcrumb-item>接警推送信息</el-breadcrumb-item>
+      <el-breadcrumb-item>报警信息</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片区域 -->
@@ -18,22 +18,44 @@
             ></el-button> </el-input></el-col
       ></el-row>
     </el-card>
+
     <!-- 表格区域 -->
     <el-table :data="infoList" style="width: 100%" border stripe>
       <el-table-column type="index"> </el-table-column>
-      <el-table-column prop="number" label="火警编号" width="180">
+      <el-table-column prop="firewarning_address" label="火灾位置" width="180">
       </el-table-column>
-      <el-table-column prop="name" label="消防站名称" width="180">
+      <el-table-column prop="firewarning_id" label="火警编号ID" width="180">
       </el-table-column>
-      <el-table-column prop="carNumber" label="消防车编号" width="180">
+      <el-table-column
+        prop="firewarning_latitude"
+        label="报警人当前纬度"
+        width="180"
+      >
       </el-table-column>
-      <el-table-column prop="count" label="消防员个数"> </el-table-column>
-      <el-table-column prop="apartment" label="火灾小区地点" width="180">
+      <el-table-column prop="firewarning_longitude" label="报警人当前经度">
       </el-table-column>
-      <el-table-column prop="time" label="时间" width="180">
-        <template slot-scope="scope">{{
-          scope.row.time | dateFormat
-        }}</template> </el-table-column
+      <el-table-column prop="firewarning_mp4" label="现场视频" width="180">
+      </el-table-column>
+      <el-table-column prop="firewarning_pic" label="现场照片" width="180">
+      </el-table-column>
+      <el-table-column prop="firewarning_role" label="报警人角色" width="180">
+      </el-table-column>
+      <el-table-column
+        prop="firewarning_situation"
+        label="灾情发生场所"
+        width="180"
+      >
+      </el-table-column>
+      <el-table-column prop="firewarning_time" label="报警时间" width="180">
+      </el-table-column
+      ><el-table-column
+        prop="firewarning_trap"
+        label="人员被困情况"
+        width="180"
+      >
+      </el-table-column
+      ><el-table-column prop="firewarning_username" label="报警人" width="180">
+      </el-table-column
       ><el-table-column label="操作" width="180">
         <template slot-scope="">
           <el-button
@@ -85,8 +107,13 @@ export default {
   },
   methods: {
     async getInfoList() {
-      const { data: res } = await this.$axios.get('/menu/infoList/')
-      this.infoList = res
+      const { data: res } = await this.$axios.post(
+        '/firewarning/allFirewarning'
+      )
+      if (res.status !== 0) {
+        return this.$message.error('获取报警信息列表失败！')
+      }
+      this.infoList = res.data
       console.log(this.infoList)
     },
 

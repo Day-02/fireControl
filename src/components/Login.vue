@@ -6,7 +6,7 @@
         <img src="../assets/biglogo.jpg" alt="" />
       </div>
 
-      <div class="title">应急服务平台后台管理系统</div>
+      <div class="title">智慧社区消防应急综合服务平台</div>
 
       <!-- 输入表单 -->
       <el-form

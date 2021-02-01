@@ -16,12 +16,7 @@
               slot="append"
               icon="el-icon-search"
             ></el-button> </el-input></el-col
-        ><el-col :span="4">
-          <el-button type="primary" @click="addResDialogVisible = true"
-            >添加居民</el-button
-          >
-        </el-col></el-row
-      >
+      ></el-row>
     </el-card>
     <!-- 表格区域 -->
     <el-table :data="residentList" style="width: 100%" border stripe>
@@ -47,55 +42,56 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180">
-        <template slot-scope="">
+        <template slot-scope="scope">
           <el-button
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="editResDialogVisible = true"
+            @click="showEditDialog(scope.row)"
           ></el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
             size="mini"
-            @click="removeResById()"
+            @click="removeUserByName(scope.row)"
           ></el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加居民信息的对话框 -->
-    <el-dialog
-      title="添加居民信息"
-      :visible.sync="addResDialogVisible"
-      width="50%"
-      @close="addDialogClosed"
-    >
-      <el-form ref="addFormRef" :model="addForm" label-width="80px">
-        <el-form-item label="居民姓名"> <el-input></el-input> </el-form-item
-      ></el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addResDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addResDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
     <!-- 修改居民信息的对话框 -->
     <el-dialog
       title="修改居民信息"
-      :visible.sync="editResDialogVisible"
+      :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
     >
-      <el-form ref="editFormRef" :model="editForm" label-width="80px">
-        <el-form-item label="居民姓名"> <el-input></el-input> </el-form-item
-      ></el-form>
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="80px"
+      >
+        <el-form-item label="用户名" prop="resident_username">
+          <el-input v-model="editForm.resident_username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="居民地址" prop="resident_address">
+          <el-input v-model="editForm.resident_address"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="resident_password">
+          <el-input
+            v-model="editForm.resident_password"
+          ></el-input> </el-form-item
+        ><el-form-item label="真实姓名" prop="resident_realname">
+          <el-input v-model="editForm.resident_realname"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="resident_tel">
+          <el-input v-model="editForm.resident_tel"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editResDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editResDialogVisible = false"
-          >确 定</el-button
-        >
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -103,20 +99,50 @@
 <script>
 export default {
   data() {
+    // 验证手机号的规则
+    var checkMobile = (rule, value, cb) => {
+      // 验证手机号的正则表达式
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        return cb()
+      }
+      cb(new Error('请输入合法的手机号'))
+    }
     return {
       residentList: [],
-      addResDialogVisible: false,
-      addForm: {},
-      editResDialogVisible: false,
+      editDialogVisible: false,
       editForm: {},
+      //修改表单的验证规则对象
+      editFormRules: {
+        resident_address: [
+          { required: true, message: '请输入居民地址', trigger: 'blur' },
+        ],
+        resident_password: [
+          { required: true, message: '请输入居民密码', trigger: 'blur' },
+          {
+            min: 3,
+            max: 10,
+            message: '密码的长度在3~10个字符之间',
+            trigger: 'blur',
+          },
+        ],
+        resident_realname: [
+          { required: true, message: '请输入居民真实姓名', trigger: 'blur' },
+        ],
+        resident_tel: [
+          { required: true, message: '请输入居民手机号码', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' },
+        ],
+      },
     }
   },
   created() {
     this.getResidentList()
   },
   methods: {
+    //获取居民信息
     async getResidentList() {
-      const { data: res } = await this.$axios.post(`user/allUser`)
+      const { data: res } = await this.$axios.post(`/user/allUser`)
       if (res.status !== 0) {
         return this.$message.error('获取居民列表失败！')
       } else {
@@ -124,21 +150,16 @@ export default {
       }
     },
 
-    // 监听添加用户对话框的关闭事件
-    addDialogClosed() {
-      this.$refs.addFormRef.resetFields()
-    },
-
-    // 监听修改用户对话框的关闭事件
+    // 监听修改居民对话框的关闭事件
     editDialogClosed() {
-      this.$refs.addFormRef.resetFields()
+      this.$refs.editFormRef.resetFields()
     },
 
-    // 根据Id删除对应的用户信息
-    async removeResById() {
-      // 弹框询问用户是否删除数据
+    // 根据username删除对应的居民信息
+    async removeUserByName(username) {
+      // 弹框询问居民是否删除数据
       const confirmResult = await this.$confirm(
-        '此操作将永久删除该用户, 是否继续?',
+        '此操作将永久删除该居民, 是否继续?',
         '提示',
         {
           confirmButtonText: '确定',
@@ -147,13 +168,56 @@ export default {
         }
       ).catch((err) => err)
 
-      // 如果用户确认删除，则返回字符串 confirm；取消了删除，则返回 cancel
+      // 确认删除，则返回字符串confirm；取消删除返回 cancel
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       } else {
-        this.$message.success('删除用户成功！')
-        this.getResidentList()
+        const { data: res } = await this.$axios.post(
+          '/user/delete' + '?username=' + username
+        )
+        if (res.status !== 0) {
+          return this.$message.error('删除居民信息失败！')
+        } else {
+          this.$message.success('删除居民信息成功！')
+          this.getResidentList()
+        }
       }
+    },
+    //修改居民信息
+    async showEditDialog(e) {
+      this.editDialogVisible = true
+      this.editForm = e
+    },
+    // 修改居民信息并提交
+    async editUserInfo() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return
+        // 发起修改居民信息的数据请求
+        const e = this.editForm
+        const query =
+          '?address=' +
+          e.resident_address +
+          '&password=' +
+          e.resident_password +
+          '&tel=' +
+          e.resident_tel +
+          '&username=' +
+          e.resident_username +
+          '&realname=' +
+          e.resident_realname
+        const { data: res } = await this.$axios.post(`/user/update` + query)
+
+        if (res.status !== 0) {
+          return this.$message.error('更新居民信息失败！')
+        }
+
+        // 关闭对话框
+        this.editDialogVisible = false
+        // 刷新数据列表
+        this.getResidentList()
+        // 提示修改成功
+        this.$message.success('更新居民信息成功！')
+      })
     },
   },
 }
