@@ -1,0 +1,44 @@
+
+.header{
+  width: 100%;
+  height: 54px;
+  background:url(../../../assets/screen_img/title.png);
+  background-size: 100% 100%;
+}
+
+.header h1{
+  color: rgba(255,255,255,.8);
+  font-size: 28px;
+  text-align: center;
+}
+.mainbox {
+  display: flex;
+  min-width: 683px;
+  max-width: 1280px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 10px 10px 0;
+}
+.mainbox .column{
+  flex: 3;
+}
+.column:nth-child(2){
+  flex:5;
+  margin:0 10px 15px;
+  overflow: hidden;
+}
+.mainbox .column .panel{
+  position: relative;
+  padding: 0 15px 0;
+  margin-bottom: 10px;
+  height: 165px;
+ border:1px solid rgba(25, 186, 139, 0.17);
+ background: url(../../../assets/screen_img/line.png) rgba(255,255,255,.04);
+ 
+}
+
+.mainbox .column .map{
+  position: relative;
+  height: 342px;
+
+}
