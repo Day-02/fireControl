@@ -15,29 +15,9 @@
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据大屏</span>
           </el-menu-item>
-          <el-menu-item index="/address">
-            <i class="el-icon-map-location"></i>
-            <span slot="title">地址信息</span>
-          </el-menu-item>
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span>系统管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/user">用户管理</el-menu-item>
-              <el-menu-item index="/role">角色管理</el-menu-item>
-              <el-menu-item index="/power">权限管理</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-
-          <el-menu-item index="/resident">
-            <i class="el-icon-school"></i>
-            <span slot="title">居民管理</span>
-          </el-menu-item>
-          <el-menu-item index="/apartment">
-            <i class="el-icon-office-building"></i>
-            <span slot="title">社区管理</span>
+          <el-menu-item index="/fireman">
+            <i class="el-icon-user"></i>
+            <span slot="title">消防员管理</span>
           </el-menu-item>
           <el-menu-item index="/station">
             <i class="el-icon-help"></i>
@@ -46,26 +26,23 @@
             <i class="el-icon-truck"></i>
             <span slot="title">消防车管理</span>
           </el-menu-item>
-          <el-menu-item index="/fireman">
-            <i class="el-icon-user"></i>
-            <span slot="title">消防员管理</span>
+
+          <el-menu-item index="/resident">
+            <i class="el-icon-school"></i>
+            <span slot="title">居民管理</span>
           </el-menu-item>
-          <el-menu-item index="/call">
+          <el-menu-item index="/apartment">
+            <i class="el-icon-office-building"></i>
+            <span slot="title">小区管理</span>
+          </el-menu-item>
+          <el-menu-item index="/firewarning">
             <i class="el-icon-phone-outline"></i>
-            <span slot="title">报警管理</span>
+            <span slot="title">居民报警信息</span> </el-menu-item
+          ><el-menu-item index="/feedback">
+            <i class="el-icon-document"></i>
+            <span slot="title">报警反馈信息</span>
           </el-menu-item>
 
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span>信息管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/firewarning">居民报警信息</el-menu-item>
-              <el-menu-item index="/appraise">用户评价信息</el-menu-item>
-              <el-menu-item index="/feedback">报警反馈信息</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
           <el-menu-item index="/mycharts">
             <i class="el-icon-data-line"></i>
             <span slot="title">数据统计</span>
@@ -132,7 +109,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.29);
 }
 .el-aside {
-  background-color: #b12412;
+  // background-color: #b12412;
 }
 .el-main {
   background-color: #e9edf1;

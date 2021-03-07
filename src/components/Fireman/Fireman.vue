@@ -17,47 +17,67 @@
               icon="el-icon-search"
             ></el-button> </el-input></el-col
       ></el-row>
+      <!-- 表格区域 -->
+      <el-table :data="infoList" style="width: 100%" border stripe>
+        <el-table-column type="index"> </el-table-column
+        ><el-table-column prop="fireman_id" label="消防员ID" width="80">
+        </el-table-column>
+        <el-table-column
+          prop="fireman_username"
+          label="消防员用户名"
+          width="120"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="fireman_realname"
+          label="消防员真实姓名"
+          width="140"
+        >
+        </el-table-column
+        ><el-table-column
+          prop="fireman_password"
+          label="消防员密码"
+          width="150"
+        >
+        </el-table-column>
+        <el-table-column prop="fireman_tel" label="消防员手机号" width="180">
+        </el-table-column
+        ><el-table-column
+          prop="fireman_belong_firehouse"
+          label="消防员所属消防站"
+          width="160"
+        >
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="showEditDialog(scope.row)"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="removeInfoByName(scope.row.fireman_username)"
+            ></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[1, 2, 5, 10]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
-    <!-- 表格区域 -->
-    <el-table :data="infoList" style="width: 100%" border stripe>
-      <el-table-column type="index"> </el-table-column
-      ><el-table-column prop="fireman_id" label="消防员ID" width="100">
-      </el-table-column>
-      <el-table-column prop="fireman_username" label="消防员用户名" width="160">
-      </el-table-column>
-      <el-table-column
-        prop="fireman_realname"
-        label="消防员真实姓名"
-        width="160"
-      >
-      </el-table-column
-      ><el-table-column prop="fireman_password" label="消防员密码" width="150">
-      </el-table-column>
-      <el-table-column prop="fireman_tel" label="消防员手机号" width="180">
-      </el-table-column
-      ><el-table-column
-        prop="fireman_belong_firehouse"
-        label="消防员所属消防站"
-        width="160"
-      >
-      </el-table-column>
-      <el-table-column label="操作" width="180">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="mini"
-            @click="showEditDialog(scope.row)"
-          ></el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            @click="removeInfoByName(scope.row.fireman_username)"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
 
     <!-- 修改消防员信息的对话框 -->
     <el-dialog
@@ -104,15 +124,12 @@
 <script>
 export default {
   data() {
-    // 验证手机号的正则表达式
-    var checkMobile = (rule, value, cb) => {
-      const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
-      if (regMobile.test(value)) {
-        return cb()
-      }
-      cb(new Error('请输入合法的手机号'))
-    }
     return {
+      queryInfo: {
+        pageNum: 1,
+        pageSize: 10,
+      },
+      total: 0,
       infoList: [],
       editDialogVisible: false,
       editForm: {},
@@ -132,7 +149,6 @@ export default {
         ],
         fireman_tel: [
           { required: true, message: '请输入消防员手机号码', trigger: 'blur' },
-          { validator: checkMobile, trigger: 'blur' },
         ],
         fireman_belong_firehouse: [
           {
@@ -150,11 +166,18 @@ export default {
   methods: {
     //获得消防员信息列表
     async getInfoList() {
-      const { data: res } = await this.$axios.post('/fireman/allFirehouse')
-      if (res.status !== 0) {
+      const { data: res } = await this.$axios.post(
+        '/fireman/allFireman' +
+          '?pageNum=' +
+          this.queryInfo.pageNum +
+          '&pageSize=' +
+          this.queryInfo.pageSize
+      )
+      if (res.code !== 200) {
         return this.$message.error('获取消防员信息列表失败！')
       }
       this.infoList = res.data
+      this.total = res.total
     },
     //修改消防员信息的窗口展示
     async showEditDialog(e) {
@@ -215,7 +238,7 @@ export default {
         return this.$message.info('已取消删除')
       } else {
         const { dat: res } = await this.$axios.post(
-          '/fireman/delete' + '?username' + username
+          '/fireman/delete' + '?username=' + username
         )
         if (res.status !== 0) {
           return this.$message.error('删除消防员信息失败！')
@@ -224,11 +247,19 @@ export default {
         this.getInfoList()
       }
     },
+
+    // 监听 pagesize 改变的事件
+    handleSizeChange(newSize) {
+      this.queryInfo.pageSize = newSize
+      this.getInfoList()
+    },
+    // 监听 页码值 改变的事件
+    handleCurrentChange(newPage) {
+      this.queryInfo.pageNum = newPage
+      this.getInfoList()
+    },
   },
 }
 </script>
 <style lang="less" scoped>
-.el-card {
-  margin-top: 20px;
-}
 </style>

@@ -5,7 +5,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>社区管理</el-breadcrumb-item>
-      <el-breadcrumb-item>社区相关信息</el-breadcrumb-item>
+      <el-breadcrumb-item>社区信息</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片区域 -->
@@ -18,34 +18,35 @@
               icon="el-icon-search"
             ></el-button> </el-input></el-col
       ></el-row>
+      <!-- 表格区域 -->
+      <el-table :data="infoList" style="width: 100%" border stripe>
+        <el-table-column type="index"> </el-table-column>
+        <el-table-column prop="number" label="社区名称"> </el-table-column>
+        <el-table-column prop="name" label="管理员姓名"> </el-table-column>
+        <el-table-column prop="carNumber" label="管理员手机号">
+        </el-table-column>
+        <el-table-column prop="count" label="社区详细地址"> </el-table-column>
+        <el-table-column prop="apartment" label="归属消防站"> </el-table-column>
+        <el-table-column prop="time" label="社区居民数"> </el-table-column>
+        <el-table-column prop="time" label="社区发生火灾次数"> </el-table-column
+        ><el-table-column label="操作" width="120">
+          <template slot-scope="">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="editInfoDialogVisible = true"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="removeInfoById()"
+            ></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
-    <!-- 表格区域 -->
-    <el-table :data="infoList" style="width: 100%" border stripe>
-      <el-table-column type="index"> </el-table-column>
-      <el-table-column prop="number" label="社区名称"> </el-table-column>
-      <el-table-column prop="name" label="管理员姓名"> </el-table-column>
-      <el-table-column prop="carNumber" label="管理员手机号"> </el-table-column>
-      <el-table-column prop="count" label="社区详细地址"> </el-table-column>
-      <el-table-column prop="apartment" label="归属消防站"> </el-table-column>
-      <el-table-column prop="time" label="社区居民数"> </el-table-column>
-      <el-table-column prop="time" label="社区发生火灾次数"> </el-table-column
-      ><el-table-column label="操作">
-        <template slot-scope="">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="mini"
-            @click="editInfoDialogVisible = true"
-          ></el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            @click="removeInfoById()"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
 
     <!-- 修改信息的对话框 -->
     <el-dialog
@@ -82,7 +83,6 @@ export default {
     async getInfoList() {
       const { data: res } = await this.$axios.get('/menu/infoList/')
       this.infoList = res
-      console.log(this.infoList)
     },
 
     // 监听修改火警信息对话框的关闭事件
@@ -114,7 +114,4 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.el-card {
-  margin-top: 20px;
-}
 </style>

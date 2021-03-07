@@ -3,8 +3,8 @@
     <!-- 面包屑导航区域 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>信息管理</el-breadcrumb-item>
       <el-breadcrumb-item>居民管理</el-breadcrumb-item>
-      <el-breadcrumb-item>居民列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片区域 -->
@@ -18,49 +18,62 @@
             ></el-button> </el-input
         ></el-col>
       </el-row>
-    </el-card>
-    <!-- 表格区域 -->
-    <el-table :data="residentList" style="width: 100%" border stripe>
-      <el-table-column type="index"> </el-table-column>
-      <el-table-column prop="resident_id" label="居民ID" width="80">
-      </el-table-column>
-      <el-table-column prop="resident_username" label="用户名" width="120">
-      </el-table-column
-      ><el-table-column prop="resident_password" label="居民密码" width="130">
-      </el-table-column>
-      <el-table-column
-        prop="resident_realname"
-        label="居民真实姓名"
-        width="180"
+
+      <!-- 表格区域 -->
+      <el-table :data="residentList" style="width: 100%" border stripe>
+        <el-table-column type="index"> </el-table-column>
+        <el-table-column prop="resident_username" label="用户名" width="100">
+        </el-table-column
+        ><el-table-column prop="resident_password" label="居民密码" width="120">
+        </el-table-column>
+        <el-table-column
+          prop="resident_realname"
+          label="居民真实姓名"
+          width="120"
+        >
+        </el-table-column>
+        <el-table-column prop="resident_tel" label="居民手机号" width="140">
+        </el-table-column>
+        <el-table-column prop="resident_address" label="居民地址" width="160">
+        </el-table-column>
+        <el-table-column prop="resident_status" label="账号状态" width="120">
+          <template slot-scope="scope">
+            <el-tag type="success" v-if="scope.row.resident_status"
+              >正常</el-tag
+            >
+            <el-tag type="info" v-else>拉黑</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="showEditDialog(scope.row)"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="removeUserByName(scope.row.resident_username)"
+            ></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[1, 2, 5, 10]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
       >
-      </el-table-column>
-      <el-table-column prop="resident_tel" label="居民手机号" width="180">
-      </el-table-column>
-      <el-table-column prop="resident_address" label="居民地址" width="180">
-      </el-table-column>
-      <el-table-column prop="resident_status" label="账号状态" width="120">
-        <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.resident_status">正常</el-tag>
-          <el-tag type="info" v-else>拉黑</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="mini"
-            @click="showEditDialog(scope.row)"
-          ></el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            @click="removeUserByName(scope.row.resident_username)"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      </el-pagination>
+    </el-card>
 
     <!-- 修改居民信息的对话框 -->
     <el-dialog
@@ -108,16 +121,13 @@
 <script>
 export default {
   data() {
-    // 验证手机号的规则
-    var checkMobile = (rule, value, cb) => {
-      // 验证手机号的正则表达式
-      const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
-      if (regMobile.test(value)) {
-        return cb()
-      }
-      cb(new Error('请输入合法的手机号'))
-    }
     return {
+      // 获取用户列表的参数对象
+      queryInfo: {
+        pageNum: 1,
+        pageSize: 10,
+      },
+      total: 0,
       residentList: [],
       editDialogVisible: false,
       editForm: {},
@@ -143,7 +153,6 @@ export default {
         ],
         resident_tel: [
           { required: true, message: '请输入居民手机号码', trigger: 'blur' },
-          { validator: checkMobile, trigger: 'blur' },
         ],
         resident_status: [
           { required: true, message: '请输入居民账号状态', trigger: 'blur' },
@@ -159,23 +168,52 @@ export default {
   methods: {
     //获取居民信息
     async getResidentList() {
-      const { data: res } = await this.$axios.post(`/user/allUser`)
-      if (res.status !== 0) {
+      const { data: res } = await this.$axios.post(
+        '/user/allUser' +
+          '?pageNum=' +
+          this.queryInfo.pageNum +
+          '&pageSize=' +
+          this.queryInfo.pageSize
+      )
+      if (res.code !== 200) {
         return this.$message.error('获取居民列表失败！')
       } else {
         this.residentList = res.data
+        this.total = res.total
       }
-      this.onStatus = 0
-      this.$store.commit('resetOn')
-      this.residentList.forEach((item) => {
-        if (item.resident_status === 0) this.onStatus++
-      })
-      this.$store.commit('addOn', this.onStatus)
     },
 
     // 监听修改居民对话框的关闭事件
     editDialogClosed() {
       this.$refs.editFormRef.resetFields()
+    },
+
+    //修改居民信息
+    async showEditDialog(e) {
+      this.editDialogVisible = true
+      this.editForm = e
+      console.log(e)
+    },
+    // 修改居民信息并提交
+    async editUserInfo() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return
+        // 发起修改居民信息的数据请求
+        const { data: res } = await this.$axios.post(
+          `/user/update`,
+          this.editForm
+        )
+        if (res.status !== 0) {
+          return this.$message.error('更新居民信息失败！')
+        }
+        console.log(this.editForm)
+        // 关闭对话框
+        this.editDialogVisible = false
+        // 刷新数据列表
+        this.getResidentList()
+        // 提示修改成功
+        this.$message.success('更新居民信息成功！')
+      })
     },
 
     // 根据username删除对应的居民信息
@@ -206,39 +244,19 @@ export default {
         }
       }
     },
-    //修改居民信息
-    async showEditDialog(e) {
-      this.editDialogVisible = true
-      this.editForm = e
-      console.log(e)
-    },
-    // 修改居民信息并提交
-    async editUserInfo() {
-      this.$refs.editFormRef.validate(async (valid) => {
-        if (!valid) return
-        // 发起修改居民信息的数据请求
-        const { data: res } = await this.$axios.post(
-          `/user/update`,
-          this.editForm
-        )
 
-        if (res.status !== 0) {
-          return this.$message.error('更新居民信息失败！')
-        }
-        console.log(this.editForm)
-        // 关闭对话框
-        this.editDialogVisible = false
-        // 刷新数据列表
-        this.getResidentList()
-        // 提示修改成功
-        this.$message.success('更新居民信息成功！')
-      })
+    // 监听 pagesize 改变的事件
+    handleSizeChange(newSize) {
+      this.queryInfo.pageSize = newSize
+      this.getResidentList()
+    },
+    // 监听 页码值 改变的事件
+    handleCurrentChange(newPage) {
+      this.queryInfo.pageNum = newPage
+      this.getResidentList()
     },
   },
 }
 </script>
 <style lang="less" scoped>
-.el-card {
-  margin-top: 20px;
-}
 </style>
