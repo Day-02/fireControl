@@ -23,8 +23,6 @@
       <el-table :data="residentList" style="width: 100%" border stripe>
         <el-table-column type="index"> </el-table-column>
         <el-table-column prop="resident_username" label="用户名" width="100">
-        </el-table-column
-        ><el-table-column prop="resident_password" label="居民密码" width="120">
         </el-table-column>
         <el-table-column
           prop="resident_realname"
@@ -32,9 +30,11 @@
           width="120"
         >
         </el-table-column>
+        <el-table-column prop="resident_password" label="居民密码" width="120">
+        </el-table-column>
         <el-table-column prop="resident_tel" label="居民手机号" width="140">
         </el-table-column>
-        <el-table-column prop="resident_address" label="居民地址" width="160">
+        <el-table-column prop="resident_address" label="居民地址">
         </el-table-column>
         <el-table-column prop="resident_status" label="账号状态" width="120">
           <template slot-scope="scope">
@@ -91,15 +91,11 @@
         <el-form-item label="用户名" prop="resident_username">
           <el-input v-model="editForm.resident_username" disabled></el-input>
         </el-form-item>
-        <el-form-item label="居民ID" prop="resident_id">
-          <el-input v-model="editForm.resident_id"></el-input>
+        <el-form-item label="真实姓名" prop="resident_realname">
+          <el-input v-model="editForm.resident_realname"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="resident_password">
-          <el-input
-            v-model="editForm.resident_password"
-          ></el-input> </el-form-item
-        ><el-form-item label="真实姓名" prop="resident_realname">
-          <el-input v-model="editForm.resident_realname"></el-input>
+          <el-input v-model="editForm.resident_password"></el-input>
         </el-form-item>
         <el-form-item label="手机号码" prop="resident_tel">
           <el-input v-model="editForm.resident_tel"></el-input>
@@ -133,8 +129,8 @@ export default {
       editForm: {},
       //修改表单的验证规则对象
       editFormRules: {
-        resident_id: [
-          { required: true, message: '请输入居民ID', trigger: 'blur' },
+        resident_username: [
+          { required: true, message: '请输入居民用户名', trigger: 'blur' },
         ],
         resident_address: [
           { required: true, message: '请输入居民地址', trigger: 'blur' },
@@ -192,7 +188,6 @@ export default {
     async showEditDialog(e) {
       this.editDialogVisible = true
       this.editForm = e
-      console.log(e)
     },
     // 修改居民信息并提交
     async editUserInfo() {
@@ -207,18 +202,13 @@ export default {
           return this.$message.error('更新居民信息失败！')
         }
         console.log(this.editForm)
-        // 关闭对话框
         this.editDialogVisible = false
-        // 刷新数据列表
         this.getResidentList()
-        // 提示修改成功
-        this.$message.success('更新居民信息成功！')
       })
     },
 
     // 根据username删除对应的居民信息
     async removeUserByName(username) {
-      // 弹框询问居民是否删除数据
       const confirmResult = await this.$confirm(
         '此操作将永久删除该居民, 是否继续?',
         '提示',
@@ -229,7 +219,6 @@ export default {
         }
       ).catch((err) => err)
 
-      // 确认删除，则返回字符串confirm；取消删除返回 cancel
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       } else {
@@ -239,7 +228,6 @@ export default {
         if (res.status !== 0) {
           return this.$message.error('删除居民信息失败！')
         } else {
-          this.$message.success('删除居民信息成功！')
           this.getResidentList()
         }
       }

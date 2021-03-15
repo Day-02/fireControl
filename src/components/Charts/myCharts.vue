@@ -21,7 +21,7 @@
 
 <script>
 import * as echarts from 'echarts'
-
+// TODO:区的数据表格
 export default {
   data() {
     return {
@@ -122,7 +122,10 @@ export default {
     //获得地址信息
     async getAddressList() {
       const { data: res } = await this.$axios.post(
-        '/address/allAddress' + '?pageNum=1' + '&pageSize=' + this.addTotal
+        '/community_address/allCommunity_Address' +
+          '?pageNum=1' +
+          '&pageSize=' +
+          this.addTotal
       )
       if (res.code !== 200) {
         return this.message.error('获取地址信息列表失败！')

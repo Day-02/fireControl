@@ -19,9 +19,7 @@
       ></el-row>
       <!-- 表格区域 -->
       <el-table :data="infoList" style="width: 100%" border stripe>
-        <el-table-column type="index"> </el-table-column
-        ><el-table-column prop="fireman_id" label="消防员ID" width="80">
-        </el-table-column>
+        <el-table-column type="index"> </el-table-column>
         <el-table-column
           prop="fireman_username"
           label="消防员用户名"
@@ -47,6 +45,16 @@
           label="消防员所属消防站"
           width="160"
         >
+        </el-table-column>
+        <el-table-column prop="role" label="角色" width="160">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.role == 0">居民</el-tag>
+            <el-tag type="info" v-else-if="scope.row.role == 1">物业</el-tag>
+            <el-tag type="warning" v-else-if="scope.row.role == 2"
+              >志愿者</el-tag
+            >
+            <el-tag type="danger" v-else>消防员</el-tag>
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="120">
           <template slot-scope="scope">
@@ -92,12 +100,7 @@
         :rules="editFormRules"
         label-width="150px"
       >
-        <el-form-item label="消防员编号" prop="fireman_id">
-          <el-input
-            v-model="editForm.fireman_id"
-            disabled
-          ></el-input> </el-form-item
-        ><el-form-item label="消防员用户名" prop="fireman_username">
+        <el-form-item label="消防员用户名" prop="fireman_username">
           <el-input v-model="editForm.fireman_username" disabled></el-input>
         </el-form-item>
         <el-form-item label="消防员真实姓名" prop="fireman_realname">
@@ -110,10 +113,12 @@
         <el-form-item label="消防员手机号码" prop="fireman_tel">
           <el-input v-model="editForm.fireman_tel"></el-input> </el-form-item
         ><el-form-item label="消防员所属消防站" prop="fireman_belong_firehouse">
-          <el-input
-            v-model="editForm.fireman_belong_firehouse"
-          ></el-input> </el-form-item
-      ></el-form>
+          <el-input v-model="editForm.fireman_belong_firehouse"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="role">
+          <el-input v-model="editForm.role" disabled></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
@@ -135,6 +140,9 @@ export default {
       editForm: {},
       //修改表单的验证规则对象
       editFormRules: {
+        fireman_username: [
+          { required: true, message: '请输入消防员用户名', trigger: 'blur' },
+        ],
         fireman_password: [
           { required: true, message: '请输入消防员密码', trigger: 'blur' },
           {
@@ -154,6 +162,13 @@ export default {
           {
             required: true,
             message: '请输入消防员所属消防站编号',
+            trigger: 'blur',
+          },
+        ],
+        role: [
+          {
+            required: true,
+            message: '请输入消防员角色',
             trigger: 'blur',
           },
         ],
@@ -194,20 +209,9 @@ export default {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return
         // 发起修改消防员信息的数据请求
-        const e = this.editForm
-        const query =
-          '?belong_firehouse=' +
-          e.fireman_belong_firehouse +
-          '&password=' +
-          e.fireman_password +
-          '&tel=' +
-          e.fireman_tel +
-          '&username=' +
-          e.fireman_username +
-          '&realname=' +
-          e.fireman_realname
-        const { data: res } = await this.$axios.post(`/fireman/update` + query)
+        const fireman = this.editForm
 
+        const { data: res } = await this.$axios.post(`/fireman/update`, fireman)
         if (res.status !== 0) {
           return this.$message.error('更新消防员信息失败！')
         }
@@ -215,14 +219,11 @@ export default {
         this.editDialogVisible = false
         // 刷新数据列表
         this.getInfoList()
-        // 提示修改成功
-        this.$message.success('更新消防员信息成功！')
       })
     },
 
     // 根据username删除对应的消防员信息
     async removeInfoByName(username) {
-      // 弹框询问消防员是否删除数据
       const confirmResult = await this.$confirm(
         '此操作将永久删除该消防员, 是否继续?',
         '提示',
@@ -233,7 +234,6 @@ export default {
         }
       ).catch((err) => err)
 
-      // 如果消防员确认删除，则返回字符串 confirm；取消了删除，则返回 cancel
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       } else {
@@ -243,7 +243,6 @@ export default {
         if (res.status !== 0) {
           return this.$message.error('删除消防员信息失败！')
         }
-        this.$message.success('删除消防员信息成功！')
         this.getInfoList()
       }
     },

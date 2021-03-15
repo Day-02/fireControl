@@ -26,18 +26,21 @@
             <i class="el-icon-truck"></i>
             <span slot="title">消防车管理</span>
           </el-menu-item>
-
+          <el-menu-item index="/address">
+            <i class="el-icon-map-location"></i>
+            <span slot="title">地址管理</span>
+          </el-menu-item>
           <el-menu-item index="/resident">
             <i class="el-icon-school"></i>
             <span slot="title">居民管理</span>
           </el-menu-item>
           <el-menu-item index="/apartment">
             <i class="el-icon-office-building"></i>
-            <span slot="title">小区管理</span>
+            <span slot="title">社区管理</span>
           </el-menu-item>
           <el-menu-item index="/firewarning">
             <i class="el-icon-phone-outline"></i>
-            <span slot="title">居民报警信息</span> </el-menu-item
+            <span slot="title">报警信息</span> </el-menu-item
           ><el-menu-item index="/feedback">
             <i class="el-icon-document"></i>
             <span slot="title">报警反馈信息</span>
@@ -108,9 +111,7 @@ export default {
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.29);
 }
-.el-aside {
-  // background-color: #b12412;
-}
+
 .el-main {
   background-color: #e9edf1;
 }

@@ -19,7 +19,14 @@
       ></el-row>
       <!-- 表格区域 -->
       <el-table :data="infoList" style="width: 100%" border stripe>
-        <el-table-column type="index"> </el-table-column>
+        <el-table-column type="index"></el-table-column>
+        <el-table-column
+          prop="feedback_firewarning_id"
+          label="火警编号ID"
+          width="100"
+        >
+        </el-table-column>
+        </el-table-column>
         <el-table-column
           prop="feedback_firecar_num"
           label="消防车编号"
@@ -30,6 +37,12 @@
           prop="feedback_firehouse_name"
           label="消防站名称"
           width="120"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="feedback_fireman_name"
+          label="消防员姓名"
+          width="110"
         >
         </el-table-column>
         <el-table-column
@@ -44,21 +57,7 @@
           width="120"
         >
         </el-table-column>
-        <el-table-column
-          prop="feedback_fireman_name"
-          label="消防员姓名"
-          width="110"
-        >
-        </el-table-column
-        ><el-table-column
-          prop="feedback_firewarning_id"
-          label="火警编号ID"
-          width="100"
-        >
-        </el-table-column
-        ><el-table-column prop="feedback_id" label="火警反馈ID" width="100">
-        </el-table-column
-        ><el-table-column prop="feedback_time" label="接警时间" width="180">
+        <el-table-column prop="feedback_time" label="接警时间" width="180">
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
@@ -73,24 +72,6 @@
       >
       </el-pagination>
     </el-card>
-
-    <!-- 修改接警推送信息的对话框 -->
-    <el-dialog
-      title="修改接警推送信息"
-      :visible.sync="editInfoDialogVisible"
-      width="50%"
-      @close="editDialogClosed"
-    >
-      <el-form ref="editFormRef" :model="editForm" label-width="80px">
-        <el-form-item label="火警编号"> <el-input></el-input> </el-form-item
-      ></el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editInfoDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editInfoDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -133,7 +114,6 @@ export default {
     },
     // 根据Id删除对应的火警信息
     async removeInfoById() {
-      // 弹框询问用户是否删除数据
       const confirmResult = await this.$confirm(
         '此操作将永久删除该用户, 是否继续?',
         '提示',
@@ -144,7 +124,6 @@ export default {
         }
       ).catch((err) => err)
 
-      // 如果用户确认删除，则返回字符串 confirm；取消了删除，则返回 cancel
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       } else {
@@ -154,7 +133,6 @@ export default {
     },
     // 监听 pagesize 改变的事件
     handleSizeChange(newSize) {
-      // console.log(newSize)
       this.queryInfo.pageSize = newSize
       this.getInfoList()
     },
