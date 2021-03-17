@@ -14,7 +14,9 @@
         <div class="panel chujing">
           <chujing class="chart"></chujing>
         </div>
-        <div class="panel jiben"></div>
+        <div class="panel baojing">
+          <baojing class="chart"></baojing>
+        </div>
       </div>
       <!-- 中间容器 -->
       <div class="column">
@@ -37,12 +39,14 @@
 <script>
 import jiben from '../components/jiben.vue'
 import chujing from '../components/chujing.vue'
+import baojing from '../components/baojing.vue'
 import mapdata from '../components/mapdata.vue'
 export default {
   components: {
     jiben,
     chujing,
     mapdata,
+    baojing,
   },
 }
 </script>

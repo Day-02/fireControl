@@ -177,7 +177,6 @@ export default {
             '&status=' +
             num
         )
-        console.log(res)
         if (res.code !== 200) {
           this.$message.error('查询报警信息失败！')
         }

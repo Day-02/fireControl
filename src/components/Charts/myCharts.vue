@@ -9,8 +9,11 @@
 
     <!-- 卡片区域 -->
     <div class="charts">
-      <el-card class="resChartCard">
+      <el-card class="smallChartCard">
         <div id="resChart" style="width: 300px; height: 200px"></div>
+      </el-card>
+      <el-card class="smallChartCard">
+        <div id="firewarningChart" style="width: 300px; height: 200px"></div>
       </el-card>
       <el-card class="adrChartCard">
         <div id="addressChart" style="width: 800px; height: 300px"></div>
@@ -22,17 +25,18 @@
 <script>
 import * as echarts from 'echarts'
 // TODO:区的数据表格
+//TODO:根据报警状态码查询报警信息
 export default {
   data() {
     return {
       resTotal: 100,
+      firewarnTotal: 100,
       addTotal: 100,
       onStatus: 0,
       offStatus: 0,
       residentList: [],
-      resChart: null,
+      firewarnNumList: [],
       addressList: [],
-      adrChart: null,
       areas: [
         '黄浦区',
         '徐汇区',
@@ -54,11 +58,12 @@ export default {
       nums: [],
     }
   },
-  created() {
+  created() {},
+  mounted() {
     this.getAddressList()
+    this.getFirewarningList()
     this.getResidentList()
   },
-  mounted() {},
   methods: {
     //获得居民账号信息生成图表
     async getResidentList() {
@@ -79,7 +84,7 @@ export default {
     },
     //生成居民账号状态信息图表
     initResStateCharts() {
-      this.resChart = echarts.init(document.getElementById('resChart'))
+      var resChart = echarts.init(document.getElementById('resChart'))
       var option = {
         title: {
           text: '居民账号状态统计图',
@@ -113,11 +118,67 @@ export default {
             },
           },
         ],
+        color: ['#cbccce', '#b6ea7b'],
       }
-      this.resChart.setOption(option)
-      window.addEventListener('resize', function () {
-        this.resChart.resize()
-      })
+      resChart.setOption(option)
+    },
+    //根据报警状态码查询报警信息
+    async getFirewarningList() {
+      var num = new Array(3).fill(0)
+      for (var i = 0; i < 3; i++) {
+        const { data: res } = await this.$axios.post(
+          `/firewarning/FirewarningByStatus` +
+            '?pageNum=1' +
+            '&pageSize=' +
+            this.firewarnTotal +
+            '&status=' +
+            i
+        )
+        num[i] = res.total
+        this.firewarnNumList = num
+      }
+      this.initFirewarningCharts()
+    },
+    //生成报警状态码信息图表
+    initFirewarningCharts() {
+      var firewChart = echarts.init(document.getElementById('firewarningChart'))
+      var option = {
+        title: {
+          text: '报警状态统计图',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+        },
+        legend: {
+          bottom: '2%',
+          left: '2%',
+          orient: 'vertical',
+          left: 'left',
+        },
+        series: [
+          {
+            name: '访问来源',
+            type: 'pie',
+            radius: '60%',
+            top: '7%',
+            data: [
+              { value: this.firewarnNumList[0], name: '未接警' },
+              { value: this.firewarnNumList[1], name: '接警处理中' },
+              { value: this.firewarnNumList[2], name: '处理完毕' },
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+        color: ['#e70012', '#ff8130', '#b6ea7b'],
+      }
+      firewChart.setOption(option)
     },
     //获得地址信息
     async getAddressList() {
@@ -142,9 +203,13 @@ export default {
       this.nums = nums
       this.initAddressCharts()
     },
-    //生成火警信息图表
+    //生成上海各区发生火警次数信息图表
     initAddressCharts() {
-      this.adrChart = echarts.init(document.getElementById('addressChart'))
+      var myChart
+      if (myChart != null && myChart != '' && myChart != undefined) {
+        myChart.dispose()
+      }
+      myChart = echarts.init(document.getElementById('addressChart'))
       var option = {
         title: {
           text: '上海各区发生火警次数统计图',
@@ -182,10 +247,10 @@ export default {
           },
         ],
       }
-      this.adrChart.setOption(option)
-      window.onresize = function () {
-        this.adrChart.resize()
-      }
+      myChart.setOption(option)
+      // window.onresize = function () {
+      //   this.adrChart.resize()
+      // }
     },
   },
 }
@@ -197,7 +262,7 @@ export default {
 .el-card__body {
   padding: 10px;
 }
-.resChartCard {
+.smallChartCard {
   margin-right: 15px;
   display: inline-block;
 }

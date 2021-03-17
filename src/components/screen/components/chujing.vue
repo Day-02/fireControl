@@ -56,7 +56,7 @@ export default {
         legend: {
           orient: 'vertical',
           left: '5%',
-          top: '5%',
+          bottom: '5%',
           textStyle: {
             color: '#ccc',
             fontSize: 16,

@@ -16,6 +16,7 @@ import jibenPage from '../components/screen/pages/jibenPage.vue'
 import chujingPage from '../components/screen/pages/chujingPage.vue'
 import mapPage from '../components/screen/pages/mapPage.vue'
 import screen from '../components/screen/components/screen.vue'
+import baojing from '../components/screen/components/baojing.vue'
 
 Vue.use(VueRouter)
 Vue.use(Login)
@@ -34,6 +35,7 @@ Vue.use(jibenPage)
 Vue.use(chujingPage)
 Vue.use(mapPage)
 Vue.use(screen)
+Vue.use(baojing)
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -42,6 +44,7 @@ const routes = [
   { path: '/chujing', component: chujingPage },
   { path: '/mapdata', component: mapPage },
   { path: '/screen', component: screen },
+  { path: '/baojing', component: baojing },
   {
     path: '/home', component: Home, redirect: '/resident',
     children: [{ path: '/mycharts', component: myCharts },,
